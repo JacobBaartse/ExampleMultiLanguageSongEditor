@@ -195,7 +195,7 @@ def rtf_to_txt(rtf: str) -> str:
     if hex_string:
         decoded_out.append(bytes.fromhex(hex_string).decode(prev_code_page))
     retval = ''.join(decoded_out)
-    print(retval)
+    # print(retval)
     return retval
 
 
