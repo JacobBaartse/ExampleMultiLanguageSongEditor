@@ -2,7 +2,7 @@
 Suite of Python applications to generate a .pro file that can be imported in pro-presenter 7.x with multiple languages or translation(s)
 
 introduction video for this web GUI: 
-- https://www.youtube.com/watch?  tbd.
+- https://youtu.be/31lTludJ2FQ
 
 ## Features
 
