@@ -70,9 +70,26 @@ def rtf_to_txt(rtf: str) -> str:
         'ldblquote': u'\201C',
         'rdblquote': u'\u201D',
     }
-    fcharset_to_codepage = {
-        '178': '1256',  # arabic
-        '134':  'gb2312',  # chinese  # todo gather multiple /'xx all to a bytestring
+    fcharset_to_codepage = {  # todo not tested all of these languages yet.
+        '77':   'MacRoman',  # Western european
+        '78':   'Shift-JIS', # Japanese
+        '79':   'EUC-KR',    # Korean
+        '80':   'Big5',      # Chinese Traditional
+        '81':   'gb2312',    # Chinese Simplified
+        '128':  'Shift-JIS', # Japanese
+        '129':  '949',   # Korean Hangul
+        '130':  'Johab', # Korean Johab
+        '134':  'gb2312',  # chinese            # tested OK.
+        '136': 'Big5',   # chinese traditional
+        '161': '1253',   # greek
+        '162': '1254',   # Turkish
+        '163': '1258',   # Vietnamese
+        '177': '1255',   # Hebrew
+        '178': '1256',   # arabic               # tested OK.
+        '186': '1257',   # Latvian
+        '204': '1251',   # Cyrillic  Russian, Ukrainian, Bulgarian
+        '222': '874',    # Thai
+        '238': '1250'    # Eastern European
     }
     # private unicode range U+E000–U+F8FF
     hex_string_indicator = "\uF722"
