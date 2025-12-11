@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+        <head>
+        <title>kerk_naam1 - Multi Language Song Editor</title>
+    <link rel="shortcut icon" href="favicon.png">
+    <style>
+        * {
+  padding:0px;
+  margin:0px;
+  font-family: 'Sonus', 'Arial';
+  background-color: #DFE3D3;
+ }
+    </style>
+    <script>
+function hardReloadIframe() {
+  var oldIframe = document.getElementById('mijnIframe');
+  var parent = oldIframe.parentNode;
+  parent.removeChild(oldIframe);
+
+  var newIframe = document.createElement('iframe');
+  newIframe.id = 'mijnIframe';
+  newIframe.src = oldIframe.src;
+  newIframe.width = oldIframe.width;
+  newIframe.height = oldIframe.height;
+  newIframe.allow = oldIframe.allow;
+
+  parent.appendChild(newIframe);
+}
+
+</script>
+            <link rel="stylesheet" href="/static/kerk_naam1/style.css">
+        </head>
+<body>
+<table border="0" cellspacing="0" cellpadding="0"><tr><td>
+    <iframe  frameBorder="0" src="/kerk_naam1/" height="930" width="1530" title="Iframe SongEdit"></iframe>
+    </td>
+    <td>
+        <table style="width:100%">
+            <tr>
+                <td style="width:50%"><h0>Database .pro files &nbsp <img src="/static/kerk_naam1/Sync.svg"  width="30" height="30" onclick="hardReloadIframe()"></h0>
+                </td>
+
+                <td>
+                    <label>Log in en upload, replace and remove songs</label>
+                    <br/><br/>
+                    <a href="https://drive.google.com/drive/u/0/folders/1T6Bc17qcFzmgLNZjrqDXYP_FK2GG8nlO", target="_blank"><button type=button class="buttonBlue">Open Google Drive</button></a>
+                </td>
+            </tr>
+        </table>
+    <iframe id="mijnIframe" frameBorder="0" src="https://drive.google.com/embeddedfolderview?id=1T6Bc17qcFzmgLNZjrqDXYP_FK2GG8nlO#list" height="700" width="700" title="Iframe gdrive"></iframe>
+
+    </td></tr>
+    </table>
+</body>
+</html>

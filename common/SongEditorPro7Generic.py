@@ -1,0 +1,264 @@
+from common.protobuf import presentation_pb2
+from uuid import uuid1
+import json
+import os
+
+TEMPLATE = 0
+
+
+class ValidationError(Exception):
+    pass
+
+def make_uuid():
+    tmp = uuid1().urn.split("uuid:")[1]
+    return tmp
+
+
+def add_que_group(presentation_obj, slide_label, slide_uuid):
+    presentation_obj.cue_groups.add()
+    cue_group_id = len(presentation_obj.cue_groups) - 1
+    presentation_obj.cue_groups[cue_group_id].CopyFrom(presentation_obj.cue_groups[TEMPLATE])
+    presentation_obj.cue_groups[cue_group_id].group.uuid.string = make_uuid()
+    presentation_obj.cue_groups[cue_group_id].group.name = slide_label
+    presentation_obj.cue_groups[cue_group_id].group.application_group_identifier.string = make_uuid()
+    presentation_obj.cue_groups[cue_group_id].group.application_group_name = slide_label
+    # presentation_obj.cue_groups[cue_group_id].cue_identifiers.add()  # there is already one in the template.
+    presentation_obj.cue_groups[cue_group_id].cue_identifiers[-1].string = slide_uuid
+
+
+def add_slide(presentation_obj, slide_label):
+    slide_uuid = make_uuid()
+    add_que_group(presentation_obj, slide_label, slide_uuid)
+    presentation_obj.cues.add()
+    presentation_obj.cues[-1].CopyFrom(presentation_obj.cues[TEMPLATE])
+    presentation_obj.cues[-1].uuid.string = slide_uuid
+    for element in presentation_obj.cues[-1].actions[0].slide.presentation.base_slide.elements:
+        element.element.uuid.string = make_uuid()
+    presentation_obj.cues[-1].actions[0].uuid.string = make_uuid()
+    presentation_obj.cues[-1].actions[0].slide.presentation.base_slide.uuid.string = make_uuid()
+
+
+def encode_for_rtf(some_string):
+    some_string = some_string.replace("\\", "\\\\")
+    some_string = some_string.replace("\r", "")
+    some_string = some_string.replace("{", "\\u123?")
+    some_string = some_string.replace("}", "\\u125?")
+    return some_string
+
+
+def get_text_block_names(subdir=""):
+    names = []
+    sample_file = os.path.join(subdir, r"Template.pro")
+    presentation_obj = presentation_pb2.Presentation()
+    file1 = open(sample_file, mode='rb')
+    presentation_obj.ParseFromString(file1.read())
+    for element in presentation_obj.cues[-1].actions[0].slide.presentation.base_slide.elements:
+        names.append(element.element.name)
+    return names
+
+
+def split_slides(text_block_names, song_texts, max_line_count, subdir=""):
+    slides = []
+    slide = {"label": "Verse 1"}
+    with open(os.path.join(subdir, "GroupNames.txt"), "r") as group_names:
+        labels = group_names.read().split("\n")
+
+    tmp_labels = []
+    for a_label in labels:
+        if ".." in a_label:
+            label_name = a_label.split(" ")[0]
+            start_nr, end_nr = a_label.split(" ")[1].split("..")
+            start_nr = int(start_nr)
+            end_nr = int(end_nr)
+            for i in range(start_nr, end_nr+1):
+                tmp_labels.append(label_name + " " + str(i))
+        else:
+            tmp_labels.append(a_label)
+    labels = tmp_labels
+
+    line_index = 0
+    lines_in_slide = 0
+    while True:
+        to_next_line = False
+        for index, text_block_name in enumerate(text_block_names):
+            if line_index >= len(song_texts[text_block_names[0]]):
+                return slides
+            if not to_next_line:  # slide complete
+                if (song_texts[text_block_names[0]][line_index].strip() == "") or (lines_in_slide == max_line_count):
+                    if slide:  # skip empty slides
+                        slides.append(slide)
+                    slide = {}
+                    lines_in_slide = 0
+                if song_texts[text_block_names[0]][line_index].strip() == "":
+                    to_next_line = True
+            if not to_next_line:  # store any group label
+                if song_texts[text_block_names[0]][line_index] in labels:
+                    to_next_line = True
+                    slide["label"] = song_texts[text_block_name][line_index]
+            if not to_next_line:  # append lines to slide
+                if len(song_texts[text_block_name]) > line_index:
+                    if text_block_name in slide and slide[text_block_name]:
+                        slide[text_block_name] += "\\par " + encode_for_rtf(song_texts[text_block_name][line_index])
+                    else:
+                        slide[text_block_name] = encode_for_rtf(song_texts[text_block_name][line_index])
+                if index == len(text_block_names) - 1:
+                    lines_in_slide += 1
+        line_index += 1
+
+
+def convert_to_rtf_unicodes(line):
+    return_value = ""
+    for a_char in line:
+        char_val = ord(a_char)
+        if char_val < 127:
+            return_value += a_char
+        elif char_val <= 32767:
+            return_value += f"\\u{str(char_val)} ?"
+        else:
+            return_value += f"\\u{str(char_val-65536)} ?"
+    return return_value
+
+
+def check_duplicate_labels(song_texts):
+    all_labels = list()
+    for song_text in song_texts:
+        if "label" in song_text:
+            all_labels.append(song_text['label'])
+
+    # A set to keep track of elements that have been seen
+    seen = set()
+    # A list to store duplicates found in the input list
+    duplicates = []
+
+    # Iterate over each element in the list
+    for i in all_labels:
+        if i in seen:
+            duplicates.append(i)
+        else:
+            seen.add(i)
+
+    return duplicates
+
+
+def gen_pro_data(text_block_names, song_texts, line_count, subdir="", check_labels=False, max_line_length=0):
+
+    sample_file = os.path.join(subdir, r"Template.pro")
+    presentation_obj = presentation_pb2.Presentation()
+    file1 = open(sample_file, mode='rb')
+    presentation_obj.ParseFromString(file1.read())
+    presentation_uuid = make_uuid()
+    presentation_obj.uuid.string = presentation_uuid
+
+    # required for windows to get colored text, Mac will use colors from the Template.pro
+    colors = [b"\\red255\\green255\\blue255;",
+              b"\\red0\\green255\\blue255;",
+              b"\\red255\\green255\\blue0;",
+              b"\\red255\\green0\\blue255;",
+              b"\\red125\\green125\\blue255;",
+              b"\\red125\\green255\\blue125;",
+              b"\\red255\\green125\\blue125;"]
+    rtf_data_big_font = b'{\\rtf1\\ansi\\ansicpg1252\\cocoartf2759\n\\cocoatextscaling0\\cocoaplatform0{\\fonttbl\\f0\\fnil\\fcharset0 HelveticaNeue;\\f1\\fnil\\fcharset0 LucidaGrande;}\n' \
+                        b'{\\colortbl;FONT_COLOR\\red255\\green255\\blue255;}\n' \
+                        b'{\\*\\expandedcolortbl;;\\csgray\\c100000;}\n\\deftab1680\n\\pard\\pardeftab1680\\pardirnatural\\qc\\partightenfactor0\n\n\\f0\\fs120\\cf1\\f1\\uc1 '
+
+    # remove text from intro slide
+    empty_rtf = r"{\rtf1\ansi}".encode()
+    for element in presentation_obj.cues[0].actions[0].slide.presentation.base_slide.elements:
+        element.element.text.rtf_data = empty_rtf
+        element.element.uuid.string = make_uuid()
+
+    # update reference to intro slide
+    presentation_obj.cue_groups[0].group.name = "Intro"
+    presentation_obj.cue_groups[0].group.uuid.string = make_uuid()
+    intro_uuid = make_uuid()
+    presentation_obj.cue_groups[0].cue_identifiers[0].string = intro_uuid
+    presentation_obj.cues[0].uuid.string = intro_uuid
+    presentation_obj.cue_groups[-1].group.application_group_identifier.string = make_uuid()
+    presentation_obj.cue_groups[-1].group.application_group_name = "Intro"
+
+    presentation_obj.cues[0].actions[0].uuid.string = make_uuid()
+    presentation_obj.cues[0].actions[0].slide.presentation.base_slide.uuid.string = make_uuid()
+
+    # check if empty lines in songtext are also empty in the translations.
+    for index, line in  enumerate(song_texts[text_block_names[0]]):
+        if line == '':
+            for text_block_name in text_block_names[1:]:
+                if len(song_texts[text_block_name]) > index:
+                    if song_texts[text_block_name][index]:
+                        raise ValidationError(f"There is translation for an empty {text_block_names[0]} line: <br/>"
+                                              f"at line {index}<br/>"
+                                              f"in {text_block_name}<br/>"
+                                              f"{song_texts[text_block_name][index]}")
+
+    # check the length of all lines in all song text and translations.
+    if max_line_length:
+        for text_block_name in text_block_names:
+            for line_nr, song_line in enumerate(song_texts[text_block_name]):
+                if len(song_line) > max_line_length:
+                    raise ValidationError(f"Line too long in: {text_block_name} <br/><br/>line number : {line_nr + 1}<br/><br/>"
+                                          f"{song_line}  ({len(song_line)})<br/><br/>Maximum number of characters per line: {max_line_length}")
+
+    slide_label = None
+    song_texts = split_slides(text_block_names, song_texts, line_count, subdir)
+
+    if check_labels:
+        duplicats = check_duplicate_labels(song_texts)
+        if duplicats:
+            raise ValidationError("There are duplicate Group label(s): " + ", ".join(duplicats))
+
+    prev_slide_label = "no label selected yet"
+    for slide_text in song_texts:
+        slide_uuid = make_uuid()
+        if "label" in slide_text:
+            slide_label = slide_text["label"]
+        if slide_label == prev_slide_label:
+            cue_group_id = -1
+            presentation_obj.cue_groups[cue_group_id].cue_identifiers.add()
+            presentation_obj.cue_groups[cue_group_id].cue_identifiers[-1].string = slide_uuid
+        else:
+            add_que_group(presentation_obj, slide_label, slide_uuid)
+
+        presentation_obj.cues.add()
+        presentation_obj.cues[-1].CopyFrom(presentation_obj.cues[TEMPLATE])
+        presentation_obj.cues[-1].uuid.string = slide_uuid
+        presentation_obj.cues[-1].actions[0].uuid.string = make_uuid()
+        presentation_obj.cues[-1].actions[0].slide.presentation.base_slide.uuid.string = make_uuid()
+
+        for index, element in enumerate(presentation_obj.cues[-1].actions[0].slide.presentation.base_slide.elements):
+            text_block_name = element.element.name
+            if text_block_name in slide_text:
+                element.element.uuid.string = make_uuid()
+                element.element.text.rtf_data = rtf_data_big_font.replace(b"FONT_COLOR", colors[index]) + \
+                                                convert_to_rtf_unicodes(slide_text[text_block_name]).encode() \
+                                                + b"}"
+            else:
+                element.element.uuid.string = make_uuid()
+                element.element.text.rtf_data = empty_rtf
+
+    add_slide(presentation_obj, slide_label="Interlude")
+    add_slide(presentation_obj, slide_label="Ending")
+    return presentation_obj.SerializeToString()
+
+
+class MemoryFile(object):
+    def __init__(self):
+        self.data = b""
+
+    def write(self, stuff):
+        self.data += stuff.encode()
+
+
+def save_song(text_block_names, song_texts, line_count, output_filename, subdir=""):
+    #  store also as json file.
+    mem_file = MemoryFile()
+    json.dump(song_texts, mem_file)
+
+    with open(output_filename + '.json', 'wb+') as f:
+        f.write(mem_file.data)
+
+    with open(output_filename + ".pro", "wb") as pro_file:
+        pro_file.write(gen_pro_data(text_block_names, song_texts, line_count, subdir=subdir))
+
+
+if __name__ == "__main__":
+    print(get_text_block_names())

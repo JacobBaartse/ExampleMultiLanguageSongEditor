@@ -1,0 +1,214 @@
+* {
+    font-size: 12px;
+    color:#5D5D5D;
+}
+
+h0 {
+  font-family: 'Sonus', 'Arial';
+  font-size: 30px;
+  color:#ffffff;
+}
+input[type="file"] {
+    display: none;
+}
+textarea {
+    font-family: 'Courier New', monospace;
+    resize: none;
+    overflow-x: hidden;
+}
+label {
+   font-family: 'Sonus', 'Arial';
+}
+th {
+  text-align: left;
+}
+.linked {
+    background-attachment: local;
+    background-image:
+        repeating-linear-gradient(white, white 20px, #eee 21px, #eee 23px);
+    line-height: 23px;
+}
+
+/* https://www.bestcssbuttongenerator.com/ */
+
+.buttonBlue {
+    background-color:#4cc0ff;
+    border-radius:42px;
+    border:1px solid #4cc0ff;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:19px;
+    font-weight:bold;
+    padding:11px 29px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #4cc0ff;
+}
+.buttonBlue:hover {
+    background-color:#4cc0ff;
+}
+.buttonBlue:active {
+    position:relative;
+    top:1px;
+}
+
+.buttonGray {
+    background:linear-gradient(to bottom, #6b6b6b 5%, #6b6b6b 100%);
+    background-color:#6b6b6b;
+    border-radius:42px;
+    border:1px solid #6b6b6b;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:13px;
+    font-weight:bold;
+    padding:9px 22px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #6b6b6b;
+}
+.buttonGray:hover {
+    background:linear-gradient(to bottom, #6b6b6b 5%, #6b6b6b 100%);
+    background-color:#6b6b6b;
+}
+.buttonGray:active {
+    position:relative;
+    top:1px;
+}
+
+.buttonGreen {
+    background-color:#44c767;
+    border-radius:30px;
+    border:2px solid #18ab29;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:12px;
+    padding:10px 10px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #2f6627;
+    margin-left: 20px; 
+}
+.buttonGreen:hover {
+    background-color:#5cbf2a;
+}
+.buttonGreen:active {
+    position:relative;
+    top:1px;
+}
+
+ /* https://www.bestcssbuttongenerator.com/ */
+.buttonRed {
+    background-color:#dd0000;
+    border-radius:30px;
+    border:2px solid #18ab29;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:12px;
+    padding:10px 10px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #2f6627;
+    margin-left: 20px;
+}
+.buttonRed:hover {
+    background-color:#5cbf2a;
+}
+.buttonRed:active {
+    position:relative;
+    top:1px;
+}
+
+
+ /* https://www.bestcssbuttongenerator.com/ */
+.button_to_page {
+    background-color:#44c767;
+    border-radius:30px;
+    border:2px solid #18ab29;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:12px;
+    padding:10px 10px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #2f6627;
+    margin-left: 20px;
+}
+.button:hover {
+    background-color:#5cbf2a;
+}
+.button:active {
+    position:relative;
+    top:1px;
+}
+
+
+/* https://www.cssportal.com/css-checkbox-radio-generator/ */
+.cr-wrapper *,
+.cr-wrapper *::before,
+.cr-wrapper *::after {
+	box-sizing: content-box !important;
+}
+
+.cr-wrapper input {
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+}
+
+.cr-wrapper span {
+	font-size: 12px;
+}
+
+.cr-wrapper {
+	display: table;
+	position: relative;
+	padding-left: 24px;
+	cursor: pointer;
+	margin-bottom: 2px;
+}
+
+.cr-wrapper input[type="checkbox"] ~ .cr-input {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	height: 17px;
+	width: 17px;
+	background: #94A3B8;
+	transition: background 250ms;
+	border: 1px solid #F1F5F9;
+	border-radius: 7px;
+	transform: translate(0, -50%);
+}
+
+.cr-wrapper input[type="checkbox"] ~ .cr-input::after {
+	content: "";
+	position: absolute;
+	display: none;
+	left: 2px;
+	top: 1px;
+	width: 13px;
+	height: 13px;
+	transition: background 250ms;
+	background-color: #FFFFFF;
+	clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+.cr-wrapper input:checked ~ .cr-input::after {
+	display: block;
+}
+
+.cr-wrapper:hover input[type="checkbox"]:not([disabled]) ~ .cr-input,
+.cr-wrapper input[type="checkbox"]:focus ~ .cr-input {
+	background: #E2E8F0;
+	border-color: #64748B;
+}
+
+.cr-wrapper input[type="checkbox"]:checked ~ .cr-input {
+	background: #4cc0ff;
+	border-color: #4cc0ff;
+}
