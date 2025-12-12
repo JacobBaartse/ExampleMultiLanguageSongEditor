@@ -4,6 +4,8 @@ Suite of Python applications to generate a .pro file that can be imported in pro
 introduction video for this web GUI: 
 - https://youtu.be/31lTludJ2FQ
 
+
+
 ## Features
 
 In this application you can 
@@ -50,4 +52,10 @@ $ python3 flask_gui.py
 or install it on a web hosting site that supports python 3.10 or higher and Flask.
 
 one of the possible free hosting sites is https://www.pythonanywhere.com/
+
+## testing on a windows 11 pc
+Install python and pycharm
+- https://www.youtube.com/watch?v=QhukcScB9W0
+Running the song editor from pycharm
+- https://youtu.be/mOeOMgsLrfg
 
