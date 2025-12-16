@@ -1,9 +1,8 @@
 # Example MultiLanguage Song Editor
-Suite of Python applications to generate a .pro file that can be imported in pro-presenter 7.x with multiple languages or translation(s)
+Flask application to generate a .pro file that can be imported in pro-presenter 7.x and higher with multiple languages or translation(s)
 
 introduction video for this web GUI: 
 - https://youtu.be/31lTludJ2FQ
-
 
 
 ## Features
@@ -13,7 +12,7 @@ In this application you can
 - add group names like Verse 1, Chorus, etc
 - put the translation next to the song text
 - make sure the verse and chorus etc. line up for song and translation(s)
-- click save to store it in the Download directory ( now you can import it into pro-presenter )
+- click "Download .pro" to store it in the Download directory ( now you can import it into pro-presenter )
 
 
 ## Installation
@@ -51,9 +50,9 @@ $ python3 flask_gui.py
 
 or install it on a web hosting site that supports python 3.10 or higher and Flask.
 
-one of the possible free hosting sites is https://www.pythonanywhere.com/
+one of the possible free hosting sites is https://www.pythonanywhere.com/ (has to be re-activated every 3 months)
 
-## testing on a windows 11 pc
+## testing on a Windows 11 pc
 Install python and pycharm
 - https://www.youtube.com/watch?v=QhukcScB9W0
 Running the song editor from pycharm
