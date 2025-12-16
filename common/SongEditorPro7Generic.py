@@ -217,6 +217,7 @@ def gen_pro_data(text_block_names, song_texts, line_count, subdir="", check_labe
             presentation_obj.cue_groups[cue_group_id].cue_identifiers[-1].string = slide_uuid
         else:
             add_que_group(presentation_obj, slide_label, slide_uuid)
+        prev_slide_label = slide_label
 
         presentation_obj.cues.add()
         presentation_obj.cues[-1].CopyFrom(presentation_obj.cues[TEMPLATE])
